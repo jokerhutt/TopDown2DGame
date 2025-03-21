@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import main.UtilityTool;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,18 +10,19 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Player extends Entity{
-
-    GamePanel gp;
     KeyHandler keyH;
 
     public final int screenX;
     public final int screenY;
+    public BufferedImage cat;
 
     public int hasKey = 0;
 
 
     public Player (GamePanel gp, KeyHandler keyH) {
-        this.gp = gp;
+
+        super(gp);
+
         this.keyH = keyH;
 
         //center character
@@ -45,23 +47,18 @@ public class Player extends Entity{
 
     public void getPlayerImage() {
 
-        try {
-
-            up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        up1 = setup("/player/boy_up_1");
+        up2 = setup("/player/boy_up_2");
+        down1 = setup("/player/boy_down_1");
+        down2 = setup("/player/boy_down_2");
+        left1 = setup("/player/boy_left_1");
+        left2 = setup("/player/boy_left_2");
+        right1 = setup("/player/boy_right_1");
+        right2 = setup("/player/boy_right_2");
+        cat = setup("/npc/cat");
 
     }
+
 
     public void update () {
 
@@ -88,6 +85,10 @@ public class Player extends Entity{
             //CHECK OBJECT COLLISION
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
+
+            //CHECK NPC COLLISION
+            int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+            interactNPC(npcIndex);
 
 
             if (collisionOn == false) {
@@ -126,43 +127,20 @@ public class Player extends Entity{
 
         if (i != 999) {
 
-            String objectName = gp.obj[i].name;
-
-            switch(objectName) {
-
-                case "Key":
-                    gp.playSoundEffect(1);
-                    hasKey++;
-                    gp.obj[i] = null;
-                    gp.ui.showMessage("You got a key!");
-                    break;
-                case "Door":
-                    if (hasKey > 0) {
-                        gp.playSoundEffect(3);
-                        gp.obj[i] = null;
-                        hasKey--;
-                        gp.ui.showMessage("You opened the door!");
-                    } else {
-                        gp.ui.showMessage("You need a key!!");
-                    }
-                    break;
-                case "Boots":
-                    gp.playSoundEffect(2);
-                    speed = speed + 2;
-                    gp.obj[i] = null;
-                    gp.ui.showMessage("Speed up!");
-                    break;
-                case "Chest":
-                    gp.ui.gameFinished = true;
-                    gp.stopMusic();
-                    gp.playSoundEffect(4);
-                    break;
-
-            }
-
 
         }
 
+    }
+
+    public void interactNPC (int i) {
+
+        if (i != 999) {
+            if (keyH.enterPressed == true) {
+                gp.gameState = gp.dialogueState;
+                gp.npc[i].speak();
+            }
+        }
+        gp.keyH.enterPressed = false;
     }
 
     public void draw (Graphics2D g2) {
@@ -207,7 +185,7 @@ public class Player extends Entity{
                 break;
         }
 
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
 
     }
 
