@@ -9,6 +9,8 @@ public class KeyHandler implements KeyListener {
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
     GamePanel gp;
 
+    public boolean showDebugText = false;
+
     public KeyHandler (GamePanel gp) {
         this.gp = gp;
     }
@@ -129,6 +131,13 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER) {
             enterPressed = true;
         }
+        if (code == KeyEvent.VK_T) {
+            if (showDebugText == false) {
+                showDebugText = true;
+            } else if (showDebugText == true) {
+                showDebugText = false;
+            }
+        }
     }
 
     public void pauseState (int code) {
@@ -147,7 +156,36 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_C) {
             gp.gameState = gp.playState;
         }
+        if (code == KeyEvent.VK_W) {
+            if (gp.ui.slotRow != 0) {
+                gp.ui.slotRow--;
+                gp.playSoundEffect(9);
+            }
+        }
+        if (code == KeyEvent.VK_A) {
+            if (gp.ui.slotCol != 0) {
+                gp.ui.slotCol--;
+                gp.playSoundEffect(9);
+            }
+        }
+        if (code == KeyEvent.VK_S) {
+            if (gp.ui.slotRow != 3) {
+                gp.ui.slotRow++;
+                gp.playSoundEffect(9);
+            }
+        }
+        if (code == KeyEvent.VK_D) {
+            if (gp.ui.slotCol != 4) {
+                gp.ui.slotCol++;
+                gp.playSoundEffect(9);
+            }
+        }
+        if (code == KeyEvent.VK_ENTER) {
+            gp.player.selectItem();
+        }
     }
+
+
 
     @Override
     public void keyReleased(KeyEvent e) {

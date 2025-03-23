@@ -128,10 +128,7 @@ public class GamePanel extends JPanel implements Runnable {
                 drawCount = 0;
                 timer = 0;
             }
-
-
         }
-
     }
 
     public void update () {
@@ -220,6 +217,28 @@ public class GamePanel extends JPanel implements Runnable {
 
             //UI
             ui.draw(g2);
+        }
+
+        //DEBUG
+        if (keyH.showDebugText == true) {
+            g2.setFont(new Font("Arial", Font.PLAIN, 20));
+            g2.setColor(Color.white);
+            int x = 10;
+            int y = 400;
+            int lineHeight = 20;
+
+            g2.drawString("WorldX " + player.worldX, x, y);
+            y = y + lineHeight;
+
+            g2.drawString("WorldX " + player.worldY, x, y);
+            y = y + lineHeight;
+
+            g2.drawString("Col " + (player.worldX + player.solidArea.x)/tileSize, x, y);
+            y = y + lineHeight;
+
+            g2.drawString("Row " + (player.worldX + player.solidArea.y)/tileSize, x, y);
+            y = y + lineHeight;
+
         }
 
 

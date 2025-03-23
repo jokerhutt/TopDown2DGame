@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Entity {
 
@@ -61,6 +62,7 @@ public class Entity {
     //ITEM ATTRIBUTES
     public int attackValue;
     public int defenceValue;
+    public String description = "";
 
 
 
@@ -74,7 +76,17 @@ public class Entity {
     public BufferedImage image, image2, image3;
     public String name;
     public boolean collision = false;
+
+    //TYPE
     public int type; // 0 = player, 1 = npc, 2 = monster
+    public final int type_player = 0;
+    public final int type_npc = 1;
+    public final int type_monster = 2;
+    public final int type_sword = 3;
+    public final int type_axe = 4;
+    public final int type_shield = 5;
+    public final int type_consumable = 6;
+
 
     String dialogues[] = new String[20];
 
@@ -118,6 +130,11 @@ public class Entity {
         }
 
     }
+
+    public void use (Entity entity) {
+
+    };
+
     public void update() {
 
         setAction();
@@ -130,10 +147,15 @@ public class Entity {
         gp.cChecker.checkEntity(this, gp.monster);
         boolean contactPlayer = gp.cChecker.checkPlayer(this);
 
-        if (this.type == 2 && contactPlayer == true) {
+        if (this.type == type_monster && contactPlayer == true) {
             if (gp.player.invincible == false) {
                 gp.playSoundEffect(6);
-                gp.player.life = gp.player.life - 1;
+
+                int damage = attack - gp.player.defence;
+                if (damage < 0) {
+                    damage = 0;
+                }
+                gp.player.life = gp.player.life - damage;
                 gp.player.invincible = true;
             }
         }
@@ -331,7 +353,6 @@ public class Entity {
         }
 
         if (dyingCounter > i*8) {
-            dying = false;
             alive = false;
         }
     }
