@@ -3,6 +3,7 @@ package entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
+import object.OBJ_Fireball;
 import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
@@ -69,6 +70,7 @@ public class Player extends Entity{
         coin = 0;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
+        projectile = new OBJ_Fireball(gp);
         attack = getAttack();
         defence = getDefence();
 
@@ -121,7 +123,7 @@ public class Player extends Entity{
         }
         if (currentWeapon.type == type_axe) {
             attackUp1 = setup("/player/boy_axe_up_1", gp.tileSize , gp.tileSize * 2);
-            attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+            attackUp2 = setup("/player/boy_axe_up_2", gp.tileSize, gp.tileSize * 2);
             attackDown1 = setup("/player/boy_axe_down_1", gp.tileSize, gp.tileSize * 2);
             attackDown2 = setup("/player/boy_axe_down_2", gp.tileSize, gp.tileSize * 2);
             attackLeft1 = setup("/player/boy_axe_left_1", gp.tileSize * 2, gp.tileSize);
@@ -217,12 +219,26 @@ public class Player extends Entity{
             }
         }
 
+        if (gp.keyH.shotKeyPressed == true && projectile.alive == false && shotAvailableCounter == 30) {
+
+            projectile.set(worldX, worldY, direction, true, this);
+
+            gp.projectileList.add(projectile);
+            shotAvailableCounter = 0;
+            gp.playSoundEffect(10);
+
+        }
+
         if (invincible == true) {
             invincibleCounter++;
             if (invincibleCounter > 60) {
                 invincible = false;
                 invincibleCounter = 0;
             }
+        }
+
+        if (shotAvailableCounter < 30) {
+            shotAvailableCounter++;
         }
 
 
@@ -263,7 +279,7 @@ public class Player extends Entity{
             solidArea.height = attackArea.height;
 
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            damageMonster(monsterIndex);
+            damageMonster(monsterIndex, attack);
 
             worldX = currentWorldX;
             worldY = currentWorldY;
@@ -313,7 +329,7 @@ public class Player extends Entity{
         }
     }
 
-    public void damageMonster (int i) {
+    public void damageMonster (int i, int attack) {
 
         if (i != 999) {
             if (gp.monster[i].invincible == false) {
