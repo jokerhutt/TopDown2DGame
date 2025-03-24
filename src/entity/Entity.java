@@ -76,6 +76,11 @@ public class Entity {
     public int maxLife;
     public int life;
 
+    public int mana;
+    public int maxMana;
+
+    public int ammo;
+
     public BufferedImage image, image2, image3;
     public String name;
     public boolean collision = false;
